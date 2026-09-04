@@ -54,23 +54,19 @@ To build the Pages bundle by hand: `npm run build:pages`, then serve
 
 ## Shared scoreboard (two or more phones)
 
-Off by default. Turn it on by deploying the relay in [`server/`](server/index.js) — a
-~150-line WebSocket server that keeps the latest match state per room and forwards
-it to everyone else in that room. It holds no game rules, so it stays a dumb pipe.
+**Live at `wss://pingpong-relay.onrender.com`.** The relay is
+[`server/`](server/index.js) — a ~150-line WebSocket server that keeps the latest
+match state per room and forwards it to everyone else in that room. It holds no
+game rules of its own, so it stays a dumb, replaceable pipe.
 
-1. Push this repo to GitHub (below), then on [Render](https://render.com):
-   **New → Blueprint**, point it at the repo. [`render.yaml`](render.yaml) sets up a
-   free web service from `server/`. Or do it by hand: New → Web Service, root
-   directory `server`, build `npm install`, start `node index.js`.
-2. Copy the service URL and paste it into
-   [`src/app/sync-config.ts`](src/app/sync-config.ts) as `RELAY_URL`, swapping
-   `https://` for `wss://`:
+It deploys itself from this repo: [`render.yaml`](render.yaml) declares a free
+Render web service built from `server/` (root directory `server`, `npm install`,
+`node index.js`, health check `/healthz`), redeployed on every push to `main`.
 
-   ```ts
-   export const RELAY_URL = 'wss://pingpong-relay.onrender.com';
-   ```
-
-3. Push. The sharing controls appear on the setup screen once that value is set.
+To point the app somewhere else, change `RELAY_URL` in
+[`src/app/sync-config.ts`](src/app/sync-config.ts) — `wss://`, no trailing slash.
+Empty it and the app becomes a plain single-phone scoreboard with the sharing
+controls hidden.
 
 **Using it:** on the first phone pick **Share**, note the 4-character code, and start
 the match. On any other phone, open the same page, type the code, tap **Join a game**.

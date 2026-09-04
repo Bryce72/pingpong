@@ -1,13 +1,11 @@
 /**
  * Where the shared-scoreboard relay lives.
  *
- * Deploy `server/` to Render (see the README), then paste the service's URL here
- * with `wss://` in place of `https://`. Leave it empty and the app simply works
- * as a single-phone scoreboard, with the sharing controls hidden.
- *
- * Example: 'wss://pingpong-relay.onrender.com'
+ * This is the Render service built from `server/` (see the README). Empty it and
+ * the app falls back to being a single-phone scoreboard with the sharing
+ * controls hidden — everything else works the same.
  */
-export const RELAY_URL = '';
+export const RELAY_URL = 'wss://pingpong-relay.onrender.com';
 
 /** Codes people have to read off a screen and type on a phone. */
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O/0, no I/1
