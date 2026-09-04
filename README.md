@@ -1,59 +1,117 @@
-# Pingpong
+# Ping Pong Scorer
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
+A one-thumb scoreboard for table tennis, built to live on an iPhone home screen.
+Angular 21, standalone components, signals, no runtime dependencies beyond Angular.
 
-## Development server
+- **Games to 11** → 3 serves per side. **Games to 21** → 5 serves per side.
+- Serve rotation is automatic, including deuce: once both players reach one point
+  short of the target, service alternates every point.
+- Win by 2. Best of 1 / 3 / 5 / 7.
+- Ends swap between games, and at the halfway point of a deciding game.
+- Each player owns a colour — cyan and violet — carried through their name, score,
+  serve blocks and result card, so there's no doubt which side you're tapping.
+- **Single tap** a side to score it. **Double tap** to take a point off — the first
+  tap scores immediately so the board stays responsive, and the second undoes it
+  and subtracts one. `−` in the corner and `UNDO` do the same thing explicitly.
+- Portrait or landscape: two equal halves, score dead centre of each half.
+- `BIG` hides the chrome and blows the digits up for reading across the room.
+- The match is saved to `localStorage`, so a locked screen or a reload doesn't lose it.
+- Holds a **screen wake lock** so the phone doesn't sleep between rallies, and
+  re-takes it whenever you come back to the tab or tap the board. `· AWAKE` in the
+  header means the lock is actually held. Needs HTTPS and iOS 16.4 or newer; where
+  it isn't granted the app works exactly the same, the screen just dims as usual.
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Running it locally
 
 ```bash
-ng build
+npm install
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Then open http://localhost:4200.
 
 ```bash
-ng test
+npm test          # unit tests (vitest) — the serve/scoring rules are covered here
+npm run build     # production build
 ```
 
-## Running end-to-end tests
+## Hosting on GitHub Pages
 
-For end-to-end (e2e) testing, run:
+1. Create an empty repo on GitHub and push this folder to it:
 
 ```bash
-ng e2e
+git remote add origin git@github.com:<you>/<repo>.git && git branch -M main && git push -u origin main
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+2. In the repo's **Settings → Pages**, set **Source** to **GitHub Actions**.
 
-## Additional Resources
+3. That's it. `.github/workflows/deploy.yml` runs the tests, builds with a relative
+   base href (so it works at `https://<you>.github.io/<repo>/`), and publishes on
+   every push to `main`.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+To build the Pages bundle by hand: `npm run build:pages`, then serve
+`dist/pingpong/browser`.
+
+## Shared scoreboard (two or more phones)
+
+Off by default. Turn it on by deploying the relay in [`server/`](server/index.js) — a
+~150-line WebSocket server that keeps the latest match state per room and forwards
+it to everyone else in that room. It holds no game rules, so it stays a dumb pipe.
+
+1. Push this repo to GitHub (below), then on [Render](https://render.com):
+   **New → Blueprint**, point it at the repo. [`render.yaml`](render.yaml) sets up a
+   free web service from `server/`. Or do it by hand: New → Web Service, root
+   directory `server`, build `npm install`, start `node index.js`.
+2. Copy the service URL and paste it into
+   [`src/app/sync-config.ts`](src/app/sync-config.ts) as `RELAY_URL`, swapping
+   `https://` for `wss://`:
+
+   ```ts
+   export const RELAY_URL = 'wss://pingpong-relay.onrender.com';
+   ```
+
+3. Push. The sharing controls appear on the setup screen once that value is set.
+
+**Using it:** on the first phone pick **Share**, note the 4-character code, and start
+the match. On any other phone, open the same page, type the code, tap **Join a game**.
+Everyone sees the same score, and anyone can tap to score — taps land on every phone
+in well under a second. The header shows `CODE · LIVE · n JOINED`.
+
+Notes worth knowing:
+
+- **Free tier sleeps.** After 15 minutes idle Render spins the service down, so the
+  first connection of the day can take ~30–60 seconds. The app shows `connecting`
+  and keeps retrying; the scoreboard stays fully usable as a local one meanwhile.
+- **Reconnects are automatic** with backoff. If the relay restarts, the first phone
+  back in re-seeds the room from its own state.
+- **Last tap wins.** Phones exchange whole match states rather than individual
+  points. Two people tapping at the same instant settle on one result on every
+  phone — which is the right answer when both are scoring the same rally.
+- **Rooms are ephemeral** — in memory only, dropped 6 hours after the last update.
+  Nothing is stored, and no accounts are involved.
+- Test against a local relay without redeploying: `cd server && npm install &&
+  node index.js`, then open the app with `?relay=ws://localhost:8080`.
+
+## On the phone
+
+Open the Pages URL in Safari → Share → **Add to Home Screen**. It launches
+full-screen with no browser chrome, and the dark theme carries into the status bar.
+
+## Where the rules live
+
+All of the scoring logic is in [`src/app/match.ts`](src/app/match.ts) as pure
+functions over an immutable `MatchState` — no Angular, no I/O. That's the file to
+read (and [`match.spec.ts`](src/app/match.spec.ts) to extend) when you want to
+change how serves or games work. `match-store.ts` is the thin signal wrapper that
+adds undo and persistence; the components only render.
+
+`sync.ts` sits beside the store rather than inside it: it watches for locally-made
+changes and publishes them, and pushes what arrives back in through
+`applyRemote()`. Nothing in the scoring logic knows the network exists.
+
+## Possible next step
+
+Reading the score off a wall-mounted scoreboard with the phone's camera would slot
+in as an alternative input to `MatchStore.point()` — the state model already
+assumes points arrive one at a time from somewhere, so nothing below the store
+would need to change.

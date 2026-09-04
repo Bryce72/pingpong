@@ -1,0 +1,429 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.board {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+.bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+
+  .status {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    justify-content: center;
+  }
+
+  .games {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+
+  .room {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    &.live {
+      color: var(--accent);
+    }
+
+    &.waking {
+      color: var(--fg);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+  }
+
+  .awake {
+    color: var(--accent);
+    opacity: 0.8;
+  }
+}
+
+.ghost {
+  width: 40px;
+  height: 34px;
+  font-size: 14px;
+  color: var(--dim);
+  border: 1px solid var(--line);
+
+  &:active {
+    color: var(--bg);
+    background: var(--dim);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.panels {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  min-height: 0;
+  padding: 0 8px;
+}
+
+// Each panel carries its player's colour in --team; everything inside reads it.
+.team-0 {
+  --team: var(--team-0);
+}
+
+.team-1 {
+  --team: var(--team-1);
+}
+
+// Half the screen each, with the score dead centre of the half — the name and
+// serve indicator float over it rather than pushing it off-centre.
+.panel {
+  position: relative;
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-width: 0;
+  padding: 14px 10px;
+  border: 1px solid var(--line);
+  border-color: color-mix(in srgb, var(--team) 32%, transparent);
+
+  &:active {
+    background: color-mix(in srgb, var(--team) 10%, transparent);
+  }
+
+  // The serving side goes to full strength; the other stays outlined.
+  &.serving {
+    border-color: var(--team);
+  }
+}
+
+.top {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--team);
+  letter-spacing: 0.12em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tally {
+  display: flex;
+  gap: 4px;
+
+  i {
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--line);
+
+    &.won {
+      background: var(--team);
+      border-color: var(--team);
+    }
+  }
+}
+
+.score {
+  font-size: clamp(72px, 24vmin, 200px);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--team);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.bottom {
+  position: absolute;
+  right: 10px;
+  bottom: 14px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.serve {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  .dots {
+    display: flex;
+    gap: 4px;
+
+    i {
+      width: 11px;
+      height: 11px;
+      border: 1px solid var(--team);
+
+      &.on {
+        background: var(--team);
+      }
+    }
+  }
+
+  .serve-text {
+    font-size: 10px;
+    color: var(--team);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+}
+
+.badge {
+  padding: 2px 6px;
+  font-size: 10px;
+  color: var(--bg);
+  background: var(--team);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.minus {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 34px;
+  font-size: 16px;
+  color: var(--dim);
+
+  &:active {
+    color: var(--bg);
+    background: var(--dim);
+  }
+}
+
+footer.bar {
+  gap: 8px;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+}
+
+.action {
+  flex: 1;
+  padding: 11px 4px;
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+
+  &:active {
+    color: var(--bg);
+    background: var(--fg);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+  }
+}
+
+// Large display: chrome out of the way, digits as big as the screen allows.
+.board.big {
+  header.bar {
+    position: absolute;
+    top: env(safe-area-inset-top);
+    right: 0;
+    z-index: 2;
+    padding: 4px 6px;
+
+    .meta,
+    .ghost:first-child {
+      display: none;
+    }
+
+    .ghost {
+      border-color: transparent;
+    }
+  }
+
+  footer.bar {
+    display: none;
+  }
+
+  .panels {
+    padding: 6px;
+  }
+
+  .score {
+    font-size: clamp(96px, 40vmin, 340px);
+  }
+
+  // Keep names clear of the floating MIN button.
+  .name {
+    max-width: calc(100% - 88px);
+  }
+
+  .minus {
+    opacity: 0.25;
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(10, 11, 10, 0.94);
+}
+
+.card {
+  width: 100%;
+  max-width: 320px;
+  padding: 22px 18px 18px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--team, var(--accent));
+
+  .eyebrow {
+    margin: 0;
+    font-size: 10px;
+    color: var(--team, var(--accent));
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 10px 0 6px;
+    font-size: clamp(15px, 5.2vw, 20px);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
+    text-transform: uppercase;
+  }
+
+  .detail {
+    margin: 0;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    &.games {
+      margin-top: 6px;
+      font-size: 12px;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+
+  button {
+    flex: 1;
+    padding: 12px 6px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+
+    &.primary {
+      color: var(--bg);
+      background: var(--team, var(--accent));
+      border-color: var(--team, var(--accent));
+    }
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+}
+
+// Landscape phone: vertical space is the scarce thing, so the chrome gets thin
+// and the two halves take everything that's left.
+@media (orientation: landscape) and (max-height: 520px) {
+  .bar {
+    padding: 4px 8px;
+  }
+
+  footer.bar {
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom));
+  }
+
+  .ghost {
+    height: 30px;
+  }
+
+  .action {
+    padding: 8px 4px;
+  }
+
+  .panel {
+    padding: 8px;
+  }
+
+  .top {
+    top: 8px;
+  }
+
+  .bottom {
+    bottom: 8px;
+    gap: 5px;
+  }
+
+  .score {
+    font-size: clamp(64px, 34vh, 220px);
+  }
+
+  .name {
+    font-size: 12px;
+  }
+}

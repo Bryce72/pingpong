@@ -1,0 +1,230 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.setup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: calc(28px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+
+  p {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.04em;
+  }
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--dim);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+
+  &::before {
+    content: '// ';
+  }
+}
+
+// Same two colours the scoreboard uses, so the mapping is learned up front.
+.team-0 {
+  --team: var(--team-0);
+}
+
+.team-1 {
+  --team: var(--team-1);
+}
+
+.players {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 12px;
+    font: inherit;
+    font-size: 15px;
+    color: var(--team);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-color: color-mix(in srgb, var(--team) 32%, transparent);
+    outline: none;
+
+    &::placeholder {
+      color: color-mix(in srgb, var(--team) 55%, var(--dim));
+    }
+
+    &:focus {
+      border-color: var(--team);
+    }
+  }
+
+  .vs {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.choice {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  min-width: 78px;
+  padding: 16px 10px;
+  color: var(--dim);
+  border: 1px solid var(--line);
+
+  &.compact {
+    min-width: 66px;
+    padding: 12px 4px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .big {
+    font-size: 30px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+    line-height: 1;
+  }
+
+  .sub {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  // Team-coloured where a player is being picked, accent elsewhere.
+  &.on {
+    color: var(--team, var(--accent));
+    border-color: var(--team, var(--accent));
+
+    .big {
+      color: var(--team, var(--accent));
+    }
+  }
+}
+
+.code-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.code {
+  flex: 1;
+  padding: 12px;
+  font-size: 26px;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em; // balance the trailing letter-space
+  border: 1px solid var(--accent);
+}
+
+.join {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    font: inherit;
+    font-size: 17px;
+    color: var(--fg);
+    text-align: center;
+    background: transparent;
+    border: 1px solid var(--line);
+    outline: none;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+
+    &::placeholder {
+      color: var(--dim);
+      letter-spacing: 0.3em;
+    }
+
+    &:focus {
+      border-color: var(--accent);
+    }
+  }
+}
+
+.mini {
+  padding: 12px 14px;
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+
+  &:active {
+    color: var(--bg);
+    background: var(--fg);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+  }
+}
+
+.note {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.start {
+  padding: 16px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--bg);
+  background: var(--accent);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+
+  &:active {
+    filter: brightness(0.85);
+  }
+}

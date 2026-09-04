@@ -1,1 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg: #06090f;
+  --fg: #dce7f4;
+  --dim: #5d6b80;
+  --line: #1b2634;
+  --accent: #4da3ff; // chrome: titles, primary buttons
+
+  // One colour per player, so a glance at a panel says whose side it is.
+  --team-0: #22d3ee; // cyan
+  --team-1: #a78bfa; // violet
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+// The scoreboard is a tap surface, not a document: kill the mobile browser's
+// text selection, tap flash and double-tap zoom.
+body,
+button,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: none;
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+}
+
+app-root {
+  display: block;
+  height: 100dvh;
+}

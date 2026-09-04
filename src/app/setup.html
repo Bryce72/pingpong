@@ -1,0 +1,149 @@
+<div class="setup">
+  <header>
+    <h1>Ping Pong</h1>
+    <p>Tap a side to score. Serve changes itself.</p>
+  </header>
+
+  <section>
+    <h2>Players</h2>
+    <div class="players">
+      <input
+        type="text"
+        class="team-0"
+        inputmode="text"
+        autocomplete="off"
+        autocapitalize="words"
+        spellcheck="false"
+        maxlength="14"
+        placeholder="Player 1"
+        aria-label="First player name"
+        [value]="names()[0]"
+        (input)="setName(0, $any($event.target).value)"
+      />
+      <span class="vs">vs</span>
+      <input
+        type="text"
+        class="team-1"
+        inputmode="text"
+        autocomplete="off"
+        autocapitalize="words"
+        spellcheck="false"
+        maxlength="14"
+        placeholder="Player 2"
+        aria-label="Second player name"
+        [value]="names()[1]"
+        (input)="setName(1, $any($event.target).value)"
+      />
+    </div>
+  </section>
+
+  <section>
+    <h2>Game to</h2>
+    <div class="choices">
+      @for (option of targets; track option) {
+        <button
+          type="button"
+          class="choice"
+          [class.on]="target() === option"
+          (click)="target.set(option)"
+        >
+          <span class="big">{{ option }}</span>
+          <span class="sub">{{ option === 11 ? '3' : '5' }} serves each</span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2>Match</h2>
+    <div class="choices">
+      @for (option of bestOfOptions; track option) {
+        <button
+          type="button"
+          class="choice compact"
+          [class.on]="bestOf() === option"
+          (click)="bestOf.set(option)"
+        >
+          {{ option === 1 ? 'Single' : 'Best of ' + option }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2>First serve</h2>
+    <div class="choices">
+      @for (name of displayNames(); track $index) {
+        <button
+          type="button"
+          [class]="'choice compact team-' + $index"
+          [class.on]="firstServer() === $index"
+          (click)="firstServer.set($any($index))"
+        >
+          {{ name }}
+        </button>
+      }
+    </div>
+  </section>
+
+  @if (sync.available) {
+    <section>
+      <h2>Shared scoreboard</h2>
+      <div class="choices">
+        <button
+          type="button"
+          class="choice compact"
+          [class.on]="!shared()"
+          (click)="shared.set(false)"
+        >
+          One phone
+        </button>
+        <button
+          type="button"
+          class="choice compact"
+          [class.on]="shared()"
+          (click)="shared.set(true)"
+        >
+          Share
+        </button>
+      </div>
+
+      @if (shared()) {
+        <div class="code-row">
+          <span class="code">{{ code() }}</span>
+          <button type="button" class="mini" (click)="newCode()">New code</button>
+        </div>
+        <p class="note">
+          Start the match, then have them open this page and enter that code. Either phone
+          can tap the score. The first connection of the day may take up to a minute while
+          the free relay wakes up — the match works normally in the meantime and syncs the
+          moment it connects.
+        </p>
+      }
+
+      <div class="join">
+        <input
+          type="text"
+          inputmode="latin"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          maxlength="8"
+          placeholder="CODE"
+          aria-label="Room code to join"
+          [value]="joinCode()"
+          (input)="setJoinCode($any($event.target).value)"
+        />
+        <button type="button" class="mini" [disabled]="!canJoin()" (click)="join()">
+          Join a game
+        </button>
+      </div>
+
+      @if (joinStatus(); as note) {
+        <p class="note">{{ note }}</p>
+      }
+    </section>
+  }
+
+  <button type="button" class="start" (click)="start()">Start match</button>
+</div>

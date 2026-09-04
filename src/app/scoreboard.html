@@ -1,0 +1,128 @@
+<div class="board" [class.big]="bigMode()">
+  <header class="bar">
+    <button type="button" class="ghost" (click)="end()" aria-label="End match">ESC</button>
+    <div class="meta">
+      <div class="status">
+        {{ statusLine() }}@if (awake()) {<span class="awake" title="Screen kept awake"
+          >
+          · awake</span
+        >}
+      </div>
+      @if (sync.room() || gamesLine()) {
+        <div class="sub">
+          @if (sync.room()) {
+            <span class="room" [class.live]="sync.live()" [class.waking]="sync.waking()"
+              >{{ sync.room() }} · {{ sync.label() }}</span
+            >
+          }
+          @if (gamesLine()) {
+            <span class="games">{{ gamesLine() }}</span>
+          }
+        </div>
+      }
+    </div>
+    <button
+      type="button"
+      class="ghost"
+      (click)="bigMode.set(!bigMode())"
+      [attr.aria-pressed]="bigMode()"
+      aria-label="Toggle large display"
+    >
+      {{ bigMode() ? 'MIN' : 'BIG' }}
+    </button>
+  </header>
+
+  <main class="panels">
+    @for (side of sides(); track side.player) {
+      <div
+        role="button"
+        tabindex="0"
+        [class]="'panel team-' + side.player"
+        [class.serving]="side.serving"
+        [attr.aria-label]="'Add a point for ' + side.name"
+        (click)="point(side.player)"
+        (keydown.enter)="point(side.player)"
+        (keydown.space)="point(side.player)"
+      >
+        <div class="top">
+          <span class="name">{{ side.name }}</span>
+          @if (state().config.bestOf > 1) {
+            <span class="tally">
+              @for (slot of tallySlots(); track slot) {
+                <i [class.won]="slot < side.gamesWon"></i>
+              }
+            </span>
+          }
+        </div>
+
+        <div class="score">{{ side.score }}</div>
+
+        <div class="bottom">
+          @if (side.serving) {
+            <span class="serve">
+              <span class="dots">
+                @for (filled of side.dots; track $index) {
+                  <i [class.on]="filled"></i>
+                }
+              </span>
+              <span class="serve-text">
+                {{
+                  side.dots.length === 1
+                    ? 'Serving'
+                    : 'Serve ' + store.serve()!.serveNumber + ' of ' + store.serve()!.servesInTurn
+                }}
+              </span>
+            </span>
+          }
+          @if (side.badge) {
+            <span class="badge">{{ side.badge }}</span>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="minus"
+          (click)="subtract($event, side.player)"
+          [attr.aria-label]="'Remove a point from ' + side.name"
+        >
+          −
+        </button>
+      </div>
+    }
+  </main>
+
+  <footer class="bar">
+    <button type="button" class="action" (click)="store.undo()" [disabled]="!store.canUndo()">
+      Undo
+    </button>
+    <button type="button" class="action" (click)="store.swapEnds()">Swap ends</button>
+    <button type="button" class="action" (click)="store.rematch()">Restart</button>
+  </footer>
+
+  @if (gameOver()) {
+    <div class="overlay">
+      <div [class]="'card ' + winnerTeam()">
+        @if (matchOver()) {
+          <p class="eyebrow">Match</p>
+          <h2>{{ winnerName() }} wins</h2>
+          <p class="detail">{{ matchGamesLine() }}</p>
+          @if (gamesLine()) {
+            <p class="detail games">{{ gamesLine() }}</p>
+          }
+          <div class="buttons">
+            <button type="button" class="primary" (click)="store.rematch()">Rematch</button>
+            <button type="button" (click)="store.quit()">New match</button>
+          </div>
+        } @else {
+          <p class="eyebrow">Game {{ state().gameNumber }}</p>
+          <h2>{{ winnerName() }} takes it</h2>
+          <p class="detail">{{ finalLine() }}</p>
+          <div class="buttons">
+            <button type="button" class="primary" (click)="store.nextGame()">Next game</button>
+            <button type="button" (click)="store.undo()" [disabled]="!store.canUndo()">Undo</button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

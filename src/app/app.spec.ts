@@ -1,23 +1,33 @@
 import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from './app';
+import { MatchStore } from './match-store';
+import { DEFAULT_CONFIG } from './match-store';
 
 describe('App', () => {
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App],
-    }).compileComponents();
+    // The test environment's localStorage is a partial stub, so guard the reset.
+    try {
+      localStorage.clear?.();
+    } catch {
+      /* nothing persisted to clear */
+    }
+    await TestBed.configureTestingModule({ imports: [App] }).compileComponents();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', async () => {
+  it('starts on the setup screen', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, pingpong');
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-setup')).toBeTruthy();
+    expect(el.querySelector('app-scoreboard')).toBeNull();
+  });
+
+  it('shows the scoreboard once a match starts', async () => {
+    const fixture = TestBed.createComponent(App);
+    TestBed.inject(MatchStore).start(DEFAULT_CONFIG);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-scoreboard')).toBeTruthy();
   });
 });

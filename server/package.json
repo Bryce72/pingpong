@@ -1,0 +1,16 @@
+{
+  "name": "pingpong-relay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WebSocket relay that lets two phones share one ping pong scoreboard",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
